@@ -1,78 +1,81 @@
-// Generated using webpack-cli https://github.com/webpack/webpack-cli
-
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
-const isProduction = process.env.NODE_ENV == 'production';
+const devServer = (isDev) =>
+  !isDev
+    ? {}
+    : {
+        devServer: {
+          historyApiFallback: true,
+          open: true,
+          compress: true,
+          hot: true,
+          port: 8080,
+          // open: true,
+          // port: 8080,
+          // contentBase: path.join(__dirname, 'dist'),
+        },
+      };
 
-const stylesHandler = isProduction
-  ? MiniCssExtractPlugin.loader
-  : 'style-loader';
+const esLintPlugin = (isDev) =>
+  isDev ? [] : [new ESLintPlugin({ extensions: ['ts', 'js'] })];
 
-const config = {
-  entry: './src/index.ts',
-  devtool: 'source-map',
+module.exports = ({ development }) => ({
+  mode: development ? 'development' : 'production',
+  devtool: development ? 'inline-source-map' : false,
+  entry: {
+    main: './src/index.js',
+  },
   output: {
+    filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
+    assetModuleFilename: 'assets/[hash][ext]',
   },
-  devServer: {
-    open: true,
-    host: 'localhost',
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: 'index.html',
-    }),
-
-    // Add your plugins here
-    // Learn more about plugins from https://webpack.js.org/configuration/plugins/
-  ],
   module: {
     rules: [
       {
-        test: /\.(ts|tsx)$/i,
-        loader: 'ts-loader',
-        exclude: ['/node_modules/'],
+        test: /\.[tj]s$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
       },
-
+      {
+        test: /\.(?:ico|gif|png|jpg|jpeg|svg)$/i,
+        type: 'asset/resource',
+      },
+      {
+        test: /\.(woff(2)?|eot|ttf|otf)$/i,
+        type: 'asset/resource',
+      },
       {
         test: /\.css$/i,
-        use: [
-          stylesHandler,
-          {
-            loader: 'css-loader',
-            options: {
-              sourceMap: true,
-            },
-          },
-        ],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       {
         test: /\.s[ac]ss$/i,
-        use: [stylesHandler, 'css-loader', 'sass-loader'],
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
       },
-      {
-        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-        type: 'asset',
-      },
-
-      // Add your rules for custom modules here
-      // Learn more about loaders from https://webpack.js.org/loaders/
     ],
   },
+  plugins: [
+    ...esLintPlugin(development),
+    new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' }),
+    new HtmlWebpackPlugin({ template: './src/index.html' }),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: 'public',
+          noErrorOnMissing: true,
+        },
+      ],
+    }),
+    new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
+  ],
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: ['.ts', '.js'],
   },
-};
-
-module.exports = () => {
-  if (isProduction) {
-    config.mode = 'production';
-
-    config.plugins.push(new MiniCssExtractPlugin());
-  } else {
-    config.mode = 'development';
-  }
-  return config;
-};
+  ...devServer(development),
+});
