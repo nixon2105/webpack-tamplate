@@ -15,8 +15,6 @@ const devServer = (isDev) =>
           compress: true,
           hot: true,
           port: 8080,
-          // open: true,
-          // port: 8080,
           // contentBase: path.join(__dirname, 'dist'),
         },
       };
@@ -38,6 +36,10 @@ module.exports = ({ development }) => ({
   module: {
     rules: [
       {
+        test: /\.html$/i,
+        loader: 'html-loader',
+      },
+      {
         test: /\.[tj]s$/,
         use: 'ts-loader',
         exclude: /node_modules/,
@@ -57,6 +59,17 @@ module.exports = ({ development }) => ({
       {
         test: /\.s[ac]ss$/i,
         use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+      },
+      {
+        test: /\.(mp3|wav`)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: './assets/audio/',
+            },
+          },
+        ],
       },
     ],
   },
