@@ -24,14 +24,3 @@ module.exports = {
   },
   root: true,
 };
-
-// "env": {
-//   "browser": true,
-//   "es2021": true
-// },
-
-// "parser": "@typescript-eslint/parser",
-// "parserOptions": {
-//   "project": "./tsconfig.json"
-// },
-// "plugins": ["@typescript-eslint"]
