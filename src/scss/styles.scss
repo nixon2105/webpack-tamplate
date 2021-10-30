@@ -1,6 +1,5 @@
-$colorName: #27d421;
+@import "../scss/abstract/constans";
+@import "../scss/abstract/mixins";
+@import "../scss/abstract/null";
 
-h1 {
-  color: $colorName;
-  font-size: 60px;
-}
+@import "../scss/base/base";

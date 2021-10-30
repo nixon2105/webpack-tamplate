@@ -1,0 +1,15 @@
+body {
+  font-size: $base-font-size;
+}
+
+.wrapper {
+  min-height: 100%;
+  overflow: hidden;
+
+  @include column;
+}
+
+._container {
+  max-width: $content-width;
+  margin: 0px auto;
+}
