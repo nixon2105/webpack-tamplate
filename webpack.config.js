@@ -11,11 +11,11 @@ const devServer = (isDev) =>
     : {
         devServer: {
           historyApiFallback: true,
+          // contentBase: path.join(__dirname, './dist'),
           open: true,
           compress: true,
           hot: true,
           port: 8080,
-          // contentBase: path.join(__dirname, 'dist'),
         },
       };
 
@@ -25,6 +25,7 @@ const esLintPlugin = (isDev) =>
 module.exports = ({ development }) => ({
   mode: development ? 'development' : 'production',
   devtool: development ? 'inline-source-map' : false,
+  target: 'web',
   entry: {
     main: './src/index.js',
   },
